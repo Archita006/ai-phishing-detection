@@ -1,6 +1,8 @@
 import { useState } from "react"
 import axios from "axios"
 
+const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
+
 const getRiskColor = (score) => {
   if (score < 30) return { text: "text-emerald-400", label: "Safe" }
   if (score < 60) return { text: "text-yellow-400", label: "Suspicious" }
@@ -79,14 +81,14 @@ function AIExplanation({ explanation, loading }) {
         <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3"
           strokeDasharray="31.4" strokeLinecap="round"/>
       </svg>
-      Claude is analyzing...
+      Analyzing...
     </div>
   )
   if (!explanation) return null
   return (
     <div className="bg-indigo-950 border border-indigo-800 rounded-xl p-4">
       <p className="text-indigo-400 text-xs font-semibold uppercase tracking-widest mb-2">
-        🔍 Analysis 
+        🔍 Analysis
       </p>
       <p className="text-sm text-slate-300 leading-relaxed">{explanation}</p>
     </div>
@@ -94,7 +96,7 @@ function AIExplanation({ explanation, loading }) {
 }
 
 async function getExplanation(data) {
-  const res = await fetch("http://127.0.0.1:8000/explain", {
+  const res = await fetch(`${API}/explain`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -108,6 +110,7 @@ async function getExplanation(data) {
   const json = await res.json()
   return json.explanation
 }
+
 export default function App() {
   const [url, setUrl] = useState("")
   const [result, setResult] = useState(null)
@@ -124,7 +127,7 @@ export default function App() {
     setResult(null)
     setAiExplanation("")
     try {
-      const res = await axios.post("http://127.0.0.1:8000/analyze", { url })
+      const res = await axios.post(`${API}/analyze`, { url })
       setResult(res.data)
       setHistory(prev => [res.data, ...prev].slice(0, 10))
 
