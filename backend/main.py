@@ -11,12 +11,16 @@ app = FastAPI(title="Phishing Detection API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "https://ai-phishing-detection-rouge.vercel.app",
+        "https://phishing-detector.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
-
 model    = joblib.load("model/phishing_model.pkl")
 features = joblib.load("model/features.pkl")
 
