@@ -1,8 +1,7 @@
 import { useState } from "react"
 import axios from "axios"
 
-const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000"
-
+const API = import.meta.env.VITE_API_URL || "https://ai-phishing-detection-5azt.onrender.com"
 const getRiskColor = (score) => {
   if (score < 30) return { text: "text-emerald-400", label: "Safe" }
   if (score < 60) return { text: "text-yellow-400", label: "Suspicious" }
