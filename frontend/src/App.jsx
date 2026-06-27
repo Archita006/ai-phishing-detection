@@ -2,6 +2,7 @@ import { useState } from "react"
 import axios from "axios"
 
 const API = import.meta.env.VITE_API_URL || "https://ai-phishing-detection-5azt.onrender.com"
+
 const getRiskColor = (score) => {
   if (score < 30) return { text: "text-emerald-400", label: "Safe" }
   if (score < 60) return { text: "text-yellow-400", label: "Suspicious" }
@@ -129,7 +130,6 @@ export default function App() {
       const res = await axios.post(`${API}/analyze`, { url })
       setResult(res.data)
       setHistory(prev => [res.data, ...prev].slice(0, 10))
-
       setAiLoading(true)
       const explanation = await getExplanation(res.data)
       setAiExplanation(explanation)
@@ -142,44 +142,37 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex">
-      <aside className="w-64 bg-slate-900 border-r border-slate-800 p-4 flex flex-col gap-3 shrink-0">
-        <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest">Scan History</h2>
-        {history.length === 0
-          ? <p className="text-xs text-slate-600">No scans yet</p>
-          : history.map((item, i) => (
-              <HistoryItem key={i} item={item} onClick={(r) => {
-                setResult(r)
-                setAiExplanation("")
-              }} />
-            ))
-        }
-      </aside>
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
 
-      <main className="flex-1 flex flex-col items-center justify-start p-10 gap-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-white tracking-tight">🛡️ Phishing Detector</h1>
-          <p className="text-slate-400 text-sm mt-1">AI-powered URL risk analysis</p>
-        </div>
+      {/* Header */}
+      <header className="bg-slate-900 border-b border-slate-800 p-4 text-center">
+        <h1 className="text-2xl font-bold text-white tracking-tight">🛡️ Phishing Detector</h1>
+        <p className="text-slate-400 text-xs mt-1">AI-powered URL risk analysis</p>
+      </header>
 
-        <div className="w-full max-w-xl flex gap-2">
+      {/* Main */}
+      <main className="flex-1 flex flex-col items-center p-4 gap-6">
+
+        {/* Input */}
+        <div className="w-full max-w-xl flex gap-2 mt-4">
           <input
             className="flex-1 bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
-            placeholder="Enter a URL to scan e.g. https://example.com"
+            placeholder="Enter a URL to scan..."
             value={url}
             onChange={e => setUrl(e.target.value)}
             onKeyDown={e => e.key === "Enter" && analyze()}
           />
           <button onClick={analyze} disabled={loading}
             className="bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white px-5 py-3 rounded-xl text-sm font-semibold transition-colors">
-            {loading ? "Scanning..." : "Scan"}
+            {loading ? "..." : "Scan"}
           </button>
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-red-400 text-sm text-center">{error}</p>}
 
+        {/* Result */}
         {result && (
-          <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5">
+          <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-5">
             <RiskMeter score={result.risk_score} />
             <AIExplanation explanation={aiExplanation} loading={aiLoading} />
             <div>
@@ -203,6 +196,23 @@ export default function App() {
                   ))
                 }
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* History */}
+        {history.length > 0 && (
+          <div className="w-full max-w-xl">
+            <h2 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-3">
+              Scan History
+            </h2>
+            <div className="flex flex-col gap-2">
+              {history.map((item, i) => (
+                <HistoryItem key={i} item={item} onClick={(r) => {
+                  setResult(r)
+                  setAiExplanation("")
+                }} />
+              ))}
             </div>
           </div>
         )}
